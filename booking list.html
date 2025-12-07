@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Booking List</title>
+  <style>
+    :root{
+      --bg1:#1e3c72;
+      --bg2:#2a5298;
+      --card-bg: rgba(255,255,255,0.92);
+      --accent: #1976D2;
+      --muted:#6b7280;
+      --maxw:540px;
+    }
+    html,body{height:100%;margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif;background: linear-gradient(135deg,var(--bg1),var(--bg2)); color: white;}
+    .wrap{max-width:var(--maxw); margin:28px auto; background: rgba(255,255,255,0.10); backdrop-filter: blur(10px); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.25);}
+    h2{margin:6px 0 8px;font-size:22px;text-align:center;}
+    .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;}
+    .left{display:flex;gap:10px;align-items:center;}
+    .btn{background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.18);color:white;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;}
+    .btn:hover{background:rgba(255,255,255,0.18)}
+    .datebox{display:flex;gap:8px;align-items:center;font-weight:700;}
+    .date-display{background:var(--card-bg);color:#0e2a53;padding:8px 12px;border-radius:10px;font-weight:700;}
+    .controls{display:flex;gap:8px;align-items:center;}
+    .next-btn{background:var(--card-bg);color:#0e2a53;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;}
+    .next-btn:disabled{opacity:.5;cursor:not-allowed}
+    .list{margin-top:14px;}
+    .card{background:var(--card-bg); color:#0e2a53; padding:14px 16px;border-radius:12px;margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,0.12);cursor:pointer;transition: transform .12s, box-shadow .12s;}
+    .card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(0,0,0,0.18);}
+    .row-top{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:800;}
+    .row-mid{margin-top:8px;color:#164378;font-size:14px;}
+    .row-sub{margin-top:8px;font-size:13px;color:var(--muted);}
+    .empty{text-align:center;padding:26px;color:#e6eefb;}
+    .footer{margin-top:6px;text-align:center;color:rgba(255,255,255,0.72);font-size:13px;}
+    @media (max-width:520px){ .wrap{margin:18px 12px;padding:18px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Daftar Booking</h2>
+
+    <div class="topbar">
+      <div class="left">
+        <a href="home.html" class="btn">⬅ Kembali ke Home</a>
+      </div>
+
+      <div class="controls">
+        <div class="datebox">
+          <div style="font-size:13px;color:rgba(255,255,255,0.85);margin-right:8px">Tanggal</div>
+          <div id="dateDisplay" class="date-display">—</div>
+        </div>
+
+        <button id="nextBtn" class="next-btn">Next →</button>
+      </div>
+    </div>
+
+    <div id="listContainer" class="list">
+      <!-- daftar kartu muncul di sini -->
+    </div>
+
+    <div id="emptyState" class="empty" style="display:none">
+      <div style="font-size:18px;font-weight:700">Belum Ada Booking</div>
+      <div style="margin-top:8px;font-size:14px;color:#103b6b">Tidak ada data pada tanggal ini.</div>
+      <div style="margin-top:12px"><a class="btn" href="Input Booking.html">+ Tambah Booking</a></div>
+    </div>
+
+    <div class="footer" id="metaText">Menampilkan data dari Google Sheet</div>
+  </div>
+
+<script>
+/*
+  Booking List - fetch dari WebApp GET ?action=getBookings&tgl=YYYY-MM-DD
+  Default date = hari ini
+  Next button: maju 1 hari, tidak bisa mundur sebelumnya
+  Klik item -> simpan selectedBooking -> buka booking details
+*/
+
+const API_URL = "https://script.google.com/macros/s/AKfycbw2MBnNNfVoIIXrlsEnIy90FBPPSxmkPKW1oF4mS68K8vG20TnsQile-Z7fqObstK5G/exec";
+// (Jika beda, ganti API_URL di atas.)
+
+// helpers
+function toYMD(d){
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+function prettyDate(d){
+  // contoh: Minggu, 7 Des 2025
+  const opts = { weekday:'short', day:'numeric', month:'short', year:'numeric' };
+  return new Date(d).toLocaleDateString('id-ID', opts);
+}
+
+// state
+let currentDate = new Date(); // default hari ini
+const today = new Date();
+today.setHours(0,0,0,0);
+
+// dom
+const dateDisplay = document.getElementById('dateDisplay');
+const nextBtn = document.getElementById('nextBtn');
+const listContainer = document.getElementById('listContainer');
+const emptyState = document.getElementById('emptyState');
+const metaText = document.getElementById('metaText');
+
+// init
+updateUI();
+
+// event
+nextBtn.addEventListener('click', () => {
+  // tambah 1 hari
+  currentDate.setDate(currentDate.getDate() + 1);
+  updateUI();
+});
+
+function updateUI(){
+  // update date display
+  dateDisplay.textContent = prettyDate(currentDate);
+
+  // disable nextBtn? (allowed always — user wanted ability to view next dates; no limit)
+  // but we must ensure no previous date button (so we don't show previous)
+  // next always enabled
+
+  fetchBookingsForDate(toYMD(currentDate));
+}
+
+async function fetchBookingsForDate(ymd){
+  listContainer.innerHTML = ''; // clear
+  emptyState.style.display = 'none';
+  metaText.textContent = `Mengambil data untuk ${ymd} ...`;
+
+  try {
+    // call webapp GET
+    const url = new URL(API_URL);
+    url.searchParams.set('action','getBookings');
+    url.searchParams.set('tgl', ymd);
+
+    const res = await fetch(url.toString(), { method: 'GET' });
+    const js = await res.json();
+
+    if (!js || !js.ok) {
+      metaText.textContent = 'Gagal mengambil data dari server.';
+      console.error('API error', js);
+      showEmpty('Gagal mengambil data.');
+      return;
+    }
+
+    const rows = js.data || [];
+    metaText.textContent = `Menampilkan ${rows.length} booking pada ${ymd}.`;
+
+    if (!rows.length) {
+      showEmpty('Tidak ada booking pada tanggal ini.');
+      return;
+    }
+
+    // sort by jamBooking (HH:MM) ascending
+    rows.sort((a,b) => {
+      if (!a.jamBooking) return 1;
+      if (!b.jamBooking) return -1;
+      return a.jamBooking.localeCompare(b.jamBooking);
+    });
+
+    rows.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const topHtml = `<div class="row-top"><div>#${idx+1} — ${escapeHtml(item.vendorName || item.userid || '-')}</div><div style="font-size:13px;color:#0c2e52">${escapeHtml(item.jamBooking || '-')}</div></div>`;
+
+      const midHtml = `<div class="row-mid">Driver: <b>${escapeHtml(item.driverName || '-')}</b> • HP: ${escapeHtml(item.driverHP || '-')}</div>`;
+
+      const subHtml = `<div class="row-sub">Faktur: ${escapeHtml(item.jmlFaktur||'-')} — Status: <b>${escapeHtml(item.status||'Pending')}</b></div>`;
+
+      card.innerHTML = topHtml + midHtml + subHtml;
+
+      card.addEventListener('click', () => {
+        // simpan selectedBooking (format sama seperti apps script output)
+        localStorage.setItem('selectedBooking', JSON.stringify(item));
+        // buka halaman detail
+        window.location.href = 'booking details.html';
+      });
+
+      listContainer.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error(err);
+    metaText.textContent = 'Terjadi kesalahan mengambil data.';
+    showEmpty('Terjadi kesalahan saat mengambil data.');
+  }
+}
+
+function showEmpty(msg){
+  listContainer.innerHTML = '';
+  emptyState.style.display = 'block';
+  if (msg) {
+    emptyState.querySelector('div:nth-child(2)').textContent = msg;
+  }
+}
+
+// small utility to avoid XSS when injecting text
+function escapeHtml(s){
+  if (!s && s !== 0) return '';
+  return String(s).replace(/[&<>"'`=\/]/g, function (c) {
+    return {
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'
+    }[c];
+  });
+}
+</script>
+</body>
+</html>

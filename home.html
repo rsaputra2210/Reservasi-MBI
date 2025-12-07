@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Vendor</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        color: white;
+    }
+
+    .glass-card {
+        backdrop-filter: blur(15px);
+        background: rgba(255, 255, 255, 0.13);
+        border-radius: 18px;
+        padding: 30px 25px;
+        width: 95%;
+        max-width: 420px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        border: 1px solid rgba(255,255,255,0.2);
+        text-align: center;
+        animation: fadeIn 0.7s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+        margin-top: 0;
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    #clock {
+        font-size: 20px;
+        font-weight: bold;
+        margin-top: 5px;
+        color: #ffdd57;
+        text-shadow: 0 0 4px rgba(255,255,255,0.8);
+    }
+
+    .welcome {
+        margin-top: 15px;
+        margin-bottom: 25px;
+        font-size: 17px;
+        font-weight: 500;
+    }
+
+    .menu-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .menu-btn {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 18px 10px;
+        border-radius: 14px;
+        color: white;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        backdrop-filter: blur(5px);
+        transition: 0.3s ease;
+    }
+
+    .menu-btn:hover {
+        background: rgba(255,255,255,0.35);
+        transform: translateY(-4px);
+        box-shadow: 0 5px 18px rgba(0,0,0,0.2);
+    }
+
+    .logout-btn {
+        width: 100%;
+        margin-top: 10px;
+        padding: 13px;
+        background: #ff4d4d;
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+        background: #d93636;
+        transform: scale(1.03);
+    }
+
+</style>
+</head>
+<body>
+
+<div class="glass-card">
+
+    <h2>Dashboard Vendor</h2>
+    <div id="clock">00:00:00</div>
+
+    <div id="welcomeText" class="welcome">Memuat...</div>
+
+    <div class="menu-container">
+
+        <button class="menu-btn" onclick="location.href='input booking.html'">
+            📄<br>Input Booking
+        </button>
+
+        <button class="menu-btn" onclick="location.href='booking list.html'">
+            📋<br>Booking List
+        </button>
+
+        <button class="menu-btn">
+            📞<br>Contact
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking List</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background: #f2f5f9;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 22px;
+            color: #333;
+        }
+
+        /* Tombol kembali */
+        .btn-back {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #1976D2;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .btn-back:hover {
+            background: #0f5bb3;
+        }
+
+        /* Empty state */
+        .empty-state {
+            margin-top: 50px;
+            text-align: center;
+            color: #666;
+        }
+
+        .empty-state .btn {
+            padding: 10px 16px;
+            background: #1976D2;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 12px;
+        }
+
+        /* List-style cards */
+        .list-container {
+            margin-top: 10px;
+        }
+
+        .list-item {
+            background: white;
+            padding: 15px 18px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .list-item:hover {
+            transform: scale(1.01);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+
+        .row-top {
+            font-size: 15px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .row-mid {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .row-status {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #1976D2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Daftar Booking Hari Ini</h2>
+
+    <!-- Tombol kembali -->
+    <a href="home.html" class="btn-back">⬅ Kembali ke Home</a>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state">
+        <h3>Belum Ada Booking</h3>
+        <p>Silahkan tambahkan booking pertama Anda.</p>
+        <a href="Input Booking.html" class="btn">Tambah Booking</a>
+    </div>
+
+    <!-- LIST -->
+    <div id="listContainer" class="list-container"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const listContainer = document.getElementById("listContainer");
+    const emptyState = document.getElementById("emptyState");
+
+    let bookingList = JSON.parse(localStorage.getItem("bookingList")) || [];
+
+    // Jika kosong
+    if (bookingList.length === 0) {
+        emptyState.style.display = "block";
+        return;
+    }
+
+    // Ada data
+    emptyState.style.display = "none";
+
+    listContainer.innerHTML = "";
+
+    bookingList.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "list-item";
+
+        card.innerHTML = `
+            <div class="row-top">#${index + 1} — ${item.vendor}</div>
+            <div class="row-mid">Jam Booking: <b>${item.jam || "-"}</b></div>
+            <div class="row-status">Status: Pending</div>
+        `;
+
+        // Klik → buka detail
+        card.addEventListener("click", () => {
+            localStorage.setItem("selectedBooking", JSON.stringify(item));
+            window.location.href = "booking details.html";
+        });
+
+        listContainer.appendChild(card);
+    });
+
+});
+</script>
+
+</body>
+</html>
+
+        <button class="menu-btn">
+            ⚙️<br>Pengaturan
+        </button>
+
+    </div>
+
+    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+
+</div>
+
+<script>
+// JAM REALTIME ELEGAN
+function updateClock() {
+    const now = new Date();
+    document.getElementById("clock").textContent =
+        now.toLocaleTimeString("id-ID", { hour12: false });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// CEK SESSION LOGIN
+const user = JSON.parse(localStorage.getItem("currentVendor"));
+if (!user) {
+    window.location.href = "login.html";
+} else {
+    document.getElementById("welcomeText").textContent =
+        "Selamat datang, " + user.vendorName;
+}
+
+// LOGOUT
+function logout() {
+    localStorage.removeItem("currentVendor");
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

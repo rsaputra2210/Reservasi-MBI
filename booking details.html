@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail Booking</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Poppins", Arial, sans-serif;
+            background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77);
+            color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title {
+            margin-top: 20px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #dce3f0;
+            text-transform: uppercase;
+        }
+
+        /* Tabel detail */
+        .row {
+            display: grid;
+            grid-template-columns: 130px 10px 1fr;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #e5eaf2;
+        }
+
+        /* FOTO */
+        .foto-box {
+            background: rgba(255,255,255,0.08);
+            padding: 15px;
+            border-radius: 14px;
+            margin-top: 10px;
+        }
+
+        .foto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .foto-thumb {
+            width: 110px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background: #00a8e8;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,168,232,0.35);
+        }
+
+        button:hover {
+            background: #0090c7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+
+        <h2>Detail Booking</h2>
+
+        <div class="row"><div class="label">ID Booking</div><div>:</div><div id="detailId"></div></div>
+        <div class="row"><div class="label">Vendor</div><div>:</div><div id="detailVendor"></div></div>
+        <div class="row"><div class="label">Driver</div><div>:</div><div id="detailDriver"></div></div>
+        <div class="row"><div class="label">Kontak</div><div>:</div><div id="detailKontak"></div></div>
+        <div class="row"><div class="label">No Faktur</div><div>:</div><div id="detailFaktur"></div></div>
+        <div class="row"><div class="label">Keterangan</div><div>:</div><div id="detailKeterangan"></div></div>
+
+        <div class="row"><div class="label">Tanggal</div><div>:</div><div id="detailTanggal"></div></div>
+        <div class="row"><div class="label">Jam</div><div>:</div><div id="detailJam"></div></div>
+
+        <div class="row">
+            <div class="label">Disclaimer</div><div>:</div>
+            <div id="detailDisclaimer" style="color:#f0dba5; font-weight:600;"></div>
+        </div>
+
+        <div class="section-title">Foto Faktur</div>
+
+        <div id="fotoContainer" class="foto-box">
+            <p style="color:#ddd; font-size:14px;">Tidak ada foto faktur.</p>
+        </div>
+
+        <button onclick="window.location.href='Booking List.html'">Kembali</button>
+
+    </div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const bookingData = JSON.parse(localStorage.getItem("selectedBooking"));
+
+    if (!bookingData) {
+        alert("Data booking tidak ditemukan!");
+        window.location.href = "Booking List.html";
+        return;
+    }
+
+    // Menampilkan data
+    document.getElementById("detailId").innerText = bookingData.id ?? "-";
+    document.getElementById("detailVendor").innerText = bookingData.vendor ?? "-";
+    document.getElementById("detailDriver").innerText = bookingData.driver ?? "-";
+    document.getElementById("detailKontak").innerText = bookingData.kontak ?? "-";
+    document.getElementById("detailFaktur").innerText = bookingData.faktur ?? "-";
+    document.getElementById("detailKeterangan").innerText = bookingData.ket ?? "-";
+    document.getElementById("detailTanggal").innerText = bookingData.tanggal ?? "-";
+    document.getElementById("detailJam").innerText = bookingData.jam ?? "-";
+
+    // *** Disclaimer otomatis dari Input Booking ***
+    document.getElementById("detailDisclaimer").innerText =
+        bookingData.disclaimer ?? "Jam kedatangan hanya estimasi, penerimaan tetap sesuai urutan antrian saat tiba";
+
+    // Foto
+    const fotoDiv = document.getElementById("fotoContainer");
+    fotoDiv.innerHTML = "";
+
+    let fotos = [];
+
+    if (Array.isArray(bookingData.fotos)) {
+        fotos = bookingData.fotos;
+    }
+
+    if (bookingData.foto) {
+        fotos.push({ po: "-", img: bookingData.foto });
+    }
+
+    if (fotos.length === 0) {
+        fotoDiv.innerHTML = "<p style='color:#ddd; font-size:14px;'>Tidak ada foto faktur.</p>";
+        return;
+    }
+
+    fotos.forEach((f) => {
+
+        let cleanURL = (f.img || "")
+            .replace(/(\r\n|\n|\r)/gm, "")
+            .replace(/\s+/g, "")
+            .replace(/%0A|%0D/g, "")
+            .trim();
+
+        if (!cleanURL.startsWith("data:image")) {
+            cleanURL = "data:image/jpeg;base64," + cleanURL;
+        }
+
+        const wrap = document.createElement("div");
+        wrap.className = "foto-item";
+
+        wrap.innerHTML = `
+            <div style="font-size:15px; font-weight:600;">PO: ${f.po || "-"}</div>
+            <img src="${cleanURL}" class="foto-thumb" />
+        `;
+
+        wrap.querySelector("img").onclick = () => {
+            fetch(cleanURL)
+                .then(res => res.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    window.open(url, "_blank");
+                });
+        };
+
+        fotoDiv.appendChild(wrap);
+    });
+
+});
+</script>
+
+</body>
+</html>

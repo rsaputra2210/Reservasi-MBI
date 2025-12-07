@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Kedatangan Vendor</title>
+
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      margin: 0;
+      padding: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      color: white;
+    }
+    .container {
+      background: rgba(255,255,255,0.14);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 20px rgba(0,0,0,0.25);
+      padding: 35px 40px;
+      border-radius: 18px;
+      max-width: 650px;
+      width: 100%;
+      animation: fadeIn 0.9s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity:0; transform: translateY(15px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+    h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-top: 0;
+      font-weight: bold;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 15px;
+      color: #fff;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 7px;
+      border-radius: 10px;
+      border: none;
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.9);
+      outline: none;
+      font-size: 15px;
+    }
+    textarea { resize: vertical; }
+    .photo-item {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .photo-item input[type="text"] { flex: 1; }
+    .photo-item input[type="file"] {
+      flex: 1;
+      background: rgba(255,255,255,0.9);
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .photo-item button {
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+      font-weight: bold;
+    }
+    .buttons {
+      margin-top: 25px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .btn {
+      padding: 14px 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: 0.25s;
+      width: 48%;
+    }
+    .btn-back {
+      background: rgba(255,255,255,0.25);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.35); }
+    .btn-send {
+      background: white;
+      color: #1e3c72;
+    }
+    .btn-send:hover {
+      background: #f1f1f1;
+      transform: scale(1.02);
+    }
+    .add-photo-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+    .add-photo-btn:hover { background: rgba(255,255,255,0.3); }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Form Kedatangan Vendor</h2>
+
+    <label>Nama Vendor</label>
+    <input id="vendorName" type="text" disabled />
+
+    <label>Nama Driver</label>
+    <input id="driverName" type="text" />
+
+    <label>Kontak Driver</label>
+    <input id="driverPhone" type="text" />
+
+    <label>Jumlah Faktur</label>
+    <input id="jumlahFaktur" type="number" />
+
+    <label>Keterangan</label>
+    <textarea id="keterangan"></textarea>
+
+    <label>Tanggal Kedatangan</label>
+    <input id="tanggal" type="date" />
+
+    <label>Jam Kedatangan</label>
+    <input id="jam" type="time" />
+
+    <label>Upload Foto Faktur</label>
+    <div id="photos"></div>
+    <button class="add-photo-btn" onclick="addPhoto()">+ Tambah Foto Faktur</button>
+
+    <div class="buttons">
+      <button class="btn btn-back" onclick="window.location.href='home.html'">← Kembali</button>
+      <button class="btn btn-send" onclick="submitBooking()">Kirim Booking</button>
+    </div>
+  </div>
+
+<script>
+const API_URL =
+"https://script.google.com/macros/s/AKfycbw2MBnNNfVoIIXrlsEnIy90FBPPSxmkPKW1oF4mS68K8vG20TnsQile-Z7fqObstK5G/exec";
+
+document.addEventListener("DOMContentLoaded", function () {
+    const currentVendor = localStorage.getItem("currentVendor");
+
+    if (!currentVendor) {
+        alert("Anda belum login!");
+        window.location.href = "login.html";
+        return;
+    }
+
+    const vendorData = JSON.parse(currentVendor);
+    document.getElementById("vendorName").value = vendorData.vendorName;
+});
+
+function addPhoto() {
+    const wrap = document.createElement("div");
+    wrap.className = "photo-item";
+
+    wrap.innerHTML = `
+      <input type="text" placeholder="Nomor PO">
+      <input type="file" accept="image/*">
+      <button onclick="this.parentElement.remove()">X</button>
+    `;
+
+    document.getElementById("photos").appendChild(wrap);
+}
+
+function submitBooking() {
+    const vendor = JSON.parse(localStorage.getItem("currentVendor")).vendorName;
+    const driver = document.getElementById("driverName").value;
+    const kontak = document.getElementById("driverPhone").value;
+    const faktur = document.getElementById("jumlahFaktur").value;
+    const ket = document.getElementById("keterangan").value;
+    const tanggal = document.getElementById("tanggal").value;
+    const jam = document.getElementById("jam").value;
+
+    if (!driver || !kontak || !faktur || !tanggal || !jam) {
+        alert("Isi semua data wajib terlebih dahulu.");
+        return;
+    }
+
+    const bookingID = "BKG-" + Date.now();
+
+    const payload = {
+        action: "addBooking",
+        bookingID,
+        vendor,
+        driver,
+        kontak,
+        faktur,
+        ket,
+        tanggal,
+        jam,
+        inputBy: vendor
+    };
+
+    fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.status === "success") {
+            alert("Booking berhasil dikirim!");
+            window.location.href = "Booking List.html";
+        } else {
+            alert("Gagal: " + res.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Gagal mengirim booking!");
+    });
+}
+</script>
+
+</body>
+</html>

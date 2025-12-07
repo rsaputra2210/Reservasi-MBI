@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selamat Datang | PT. Medika Bina Investama</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+    }
+
+    .wrapper {
+      text-align: center;
+      padding: 40px 50px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.25);
+      max-width: 450px;
+      width: 90%;
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .button {
+      margin-top: 20px;
+      padding: 14px 22px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #ffffff;
+      color: #1e3c72;
+      font-weight: bold;
+      transition: 0.25s;
+      width: 100%;
+    }
+
+    .button:hover {
+      background: #f1f1f1;
+      transform: scale(1.03);
+    }
+
+    .footer {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="title">Selamat Datang</div>
+
+    <div class="subtitle">
+      Sistem Booking Supplier<br>
+      <b>PT. Medika Bina Investama</b>
+      <br><br>
+      Silakan lanjutkan untuk masuk ke sistem.
+    </div>
+
+    <button class="button" onclick="window.location.href='login.html'">
+      Masuk ke Halaman Login
+    </button>
+
+    <div class="footer">
+      © 2025 PT. Medika Bina Investama
+    </div>
+  </div>
+</body>
+</html>

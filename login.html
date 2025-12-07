@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Vendor</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+    }
+
+    .login-box {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 35px 40px;
+      border-radius: 18px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 25px rgba(0,0,0,0.25);
+      width: 90%;
+      max-width: 380px;
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      margin: 0 0 15px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-top: 14px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.85);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px;
+      background: white;
+      color: #1e3c72;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.25s;
+    }
+
+    button:hover {
+      background: #f1f1f1;
+      transform: scale(1.03);
+    }
+
+    p {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    a {
+      color: #fff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-box">
+
+    <h2>Login Vendor</h2>
+
+    <input id="inputUserID" type="text" placeholder="UserID" />
+    <input id="inputPass" type="password" placeholder="Password" />
+
+    <button onclick="loginVendor()">Masuk</button>
+
+    <p>
+      Belum punya akun?<br>
+      <a href="register vendor.html">Daftar di sini</a>
+    </p>
+
+  </div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbw2MBnNNfVoIIXrlsEnIy90FBPPSxmkPKW1oF4mS68K8vG20TnsQile-Z7fqObstK5G/exec";
+
+async function loginVendor() {
+    const userid = document.getElementById("inputUserID").value.trim();
+    const pass  = document.getElementById("inputPass").value.trim();
+
+    if (!userid || !pass) {
+        alert("UserID dan password harus diisi!");
+        return;
+    }
+
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                action: "login",
+                payload: { userid: userid, password: pass }
+            })
+        });
+
+        const data = await res.json();
+
+        if (!data.ok) {
+            alert(data.error || "Login gagal");
+            return;
+        }
+
+        // simpan user session
+        localStorage.setItem("currentVendor", JSON.stringify(data.user));
+
+        // redirect ke home
+        window.location.href = "home.html";
+
+    } catch (err) {
+        alert("Gagal terhubung ke server: " + err);
+    }
+}
+</script>
+
+
+</body>
+</html>

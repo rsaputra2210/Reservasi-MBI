@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar Vendor</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", Arial, sans-serif;
+        background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #f8f9fa;
+    }
+
+    .register-box {
+        background: rgba(255,255,255,0.10);
+        backdrop-filter: blur(14px);
+        padding: 38px 32px 45px;
+        border-radius: 18px;
+        width: 92%;
+        max-width: 400px;
+        box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 24px;
+        letter-spacing: 0.7px;
+        font-weight: 600;
+    }
+
+    .form-item {
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.35);
+        background: rgba(255,255,255,0.18);
+        color: white;
+        font-size: 15px;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    input::placeholder {
+        color: #dce3f0;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 25px;
+        border: none;
+        border-radius: 12px;
+        background: #00a8e8;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,168,232,0.35);
+    }
+
+    button:hover {
+        background: #0090c7;
+    }
+
+    p {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 14px;
+        color: #e5eaf2;
+    }
+
+    a {
+        color: #4fc3ff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="register-box">
+
+    <h2>Daftar Vendor</h2>
+
+    <input class="form-item" id="vendorName" type="text" placeholder="Nama Vendor">
+    <input class="form-item" id="picName" type="text" placeholder="Nama PIC">
+    <input class="form-item" id="email" type="text" placeholder="Email">
+    <input class="form-item" id="hp" type="text" placeholder="Nomor HP">
+
+    <input class="form-item" id="userid" type="text" placeholder="UserID (untuk login)">
+    <input class="form-item" id="password" type="password" placeholder="Password">
+    <input class="form-item" id="password2" type="password" placeholder="Konfirmasi Password">
+
+    <button onclick="registerVendor()">Daftar</button>
+
+    <p>Sudah punya akun? <a href="login.html">Masuk di sini</a></p>
+
+</div>
+
+<script>
+// URL Apps Script lu
+const API_URL = "https://script.google.com/macros/s/AKfycbw2MBnNNfVoIIXrlsEnIy90FBPPSxmkPKW1oF4mS68K8vG20TnsQile-Z7fqObstK5G/exec";
+
+async function registerVendor() {
+
+    let vendorName = document.getElementById("vendorName").value.trim();
+    let picName = document.getElementById("picName").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let hp = document.getElementById("hp").value.trim();
+    let userid = document.getElementById("userid").value.trim();
+    let password = document.getElementById("password").value.trim();
+    let password2 = document.getElementById("password2").value.trim();
+
+    // Validasi basic
+    if (!vendorName || !picName || !email || !hp || !userid || !password || !password2) {
+        alert("Semua field wajib diisi!");
+        return;
+    }
+
+    if (!email.includes("@") || !email.includes(".")) {
+        alert("Format email tidak valid!");
+        return;
+    }
+
+    if (!/^[0-9]+$/.test(hp)) {
+        alert("Nomor HP harus angka!");
+        return;
+    }
+
+    if (password !== password2) {
+        alert("Password dan Konfirmasi Password tidak sama!");
+        return;
+    }
+
+    // Kirim ke Apps Script
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                action: "register",
+                payload: {
+                    vendorName,
+                    picName,
+                    email,
+                    hp,
+                    userid,
+                    password
+                }
+            })
+        });
+
+        const data = await res.json();
+
+        if (!data.ok) {
+            alert(data.error || "Registrasi gagal.");
+            return;
+        }
+
+        alert("Registrasi berhasil! Silakan login.");
+        window.location.href = "login.html";
+
+    } catch (err) {
+        alert("Gagal menghubungi server: " + err);
+    }
+}
+</script>
+
+</body>
+</html>
