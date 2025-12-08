@@ -118,17 +118,21 @@ async function loginVendor() {
         return;
     }
 
+    const payload = {
+        action: "login",
+        payload: { userid: userid, password: pass }
+    };
+
     try {
         const res = await fetch(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                action: "login",
-                payload: { userid: userid, password: pass }
-            })
+            body: JSON.stringify(payload)   // TANPA HEADER → aman dari CORS
         });
 
-        const data = await res.json();
+        const text = await res.text();   // kadang Apps Script balikin text dulu
+        let data;
+        try { data = JSON.parse(text); }
+        catch { throw new Error("Respon bukan JSON: " + text); }
 
         if (!data.ok) {
             alert(data.error || "Login gagal");
@@ -147,9 +151,5 @@ async function loginVendor() {
 }
 </script>
 
-
 </body>
 </html>
-
-
-
